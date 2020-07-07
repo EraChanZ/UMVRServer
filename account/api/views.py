@@ -23,3 +23,12 @@ def registration_view(request):
         else:
             data = serializer.errors
         return Response(data)
+
+@api_view(['GET', ])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def userData_view(request):
+    if request.method == 'GET':
+        user = request.user
+        return Response({"username": user.username, 'email': user.email})
+
