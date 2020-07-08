@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from account.api.serializers import RegistrationSerializer
+from account.api.serializers import RegistrationSerializer, AccountSerializer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
@@ -29,6 +29,6 @@ def registration_view(request):
 @permission_classes([IsAuthenticated])
 def userData_view(request):
     if request.method == 'GET':
-        user = request.user
-        return Response({"username": user.username, 'email': user.email})
+        user_ser = AccountSerializer(request.user)
+        return Response(user_ser.data)
 

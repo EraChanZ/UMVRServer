@@ -7,7 +7,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['email', 'username', 'password', 'password2']
+        fields = ['email', 'username', 'password', 'password2', 'first_name', 'last_name']
         extra_kwargs = {
                 'password': {'write_only':True},
                 
@@ -17,6 +17,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account = Account(
             email = self.validated_data['email'],
             username = self.validated_data['username'],
+            first_name = self.validated_data['first_name'],
+            last_name = self.validated_data['last_name'],
+            
         )
         
         password = self.validated_data['password']
@@ -26,3 +29,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         account.set_password(password)
         account.save()
         return account
+
+class AccountSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['email', 'username', 'first_name', 'last_name']

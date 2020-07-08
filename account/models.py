@@ -4,6 +4,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 # Create your models here.
 
@@ -37,8 +38,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     email                       = models.EmailField(verbose_name='email', max_length=60, unique=True)
     username                    = models.CharField(verbose_name='username', max_length=30, unique=True)
     role                        = models.CharField(max_length=30, unique=False)
-    date_joined                 = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
-    last_login                  = models.DateTimeField(verbose_name='last_login', auto_now=True)
+    date_joined                 = models.DateTimeField(verbose_name='date_joined', default=timezone.now)
+    last_login                  = models.DateTimeField(verbose_name='last_login', default=timezone.now)
     is_admin                    = models.BooleanField(default=False)
     is_active                   = models.BooleanField(default=True)
     is_staff                    = models.BooleanField(default=False)
