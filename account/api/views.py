@@ -36,14 +36,14 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         serializer_class = self.serializer_class
 
-        if self.request.method == 'PATCH':
+        if self.request.method == 'PUT':
             serializer_class = AccountUpdateSerializer
 
         return serializer_class
     
     def update(self, request, *args, **kwargs):
-        if request.method != 'PATCH':
-            return Response("Only PATCH allowed", status=status.HTTP_400_BAD_REQUEST)
+        if request.method != 'PUT':
+            return Response("Only PUT allowed", status=status.HTTP_400_BAD_REQUEST)
         partial = True 
         user = request.user
         serializer = self.get_serializer(user, data=request.data, partial=partial)
