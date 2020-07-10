@@ -78,7 +78,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'UMVRBackEnd.wsgi.application'
-
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'media_cdn')
+MEDIA_URL = '/media/'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

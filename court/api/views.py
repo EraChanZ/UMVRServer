@@ -4,19 +4,28 @@ from rest_framework import viewsets, status
 from account.models import Account
 from rest_framework.decorators import api_view, authentication_classes, action, permission_classes
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from court.models import Court
-from .serializers import CourtSerializer
+from .serializers import CourtSerializer, CourtSerializerUpdate
 
 class CourtViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Court.objects.all()
     serializer_class = CourtSerializer
-    
+    parser_classes = (JSONParser, FormParser, MultiPartParser)
+
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+
+        if self.request.method in ['PUT', 'GET']:
+            serializer_class = CourtSerializerUpdate
+
+        return serializer_class
+
     def perform_create(self, serializer):
         user = None
         if self.request and hasattr(self.request, "user"):

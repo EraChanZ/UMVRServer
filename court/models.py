@@ -8,8 +8,9 @@ class Court(models.Model):
     address_row             = models.CharField(max_length=100, unique=False)
     latitude                = models.FloatField()
     longitude               = models.FloatField()
-    nearest_metro           = models.IntegerField(max_length=50, choices=metro_stations)
+    nearest_metro           = models.IntegerField(choices=metro_stations)
     is_free                 = models.BooleanField()
+    main_image              = models.FileField(null = True, blank=True)
 
     def __str__(self):
         return self.name
