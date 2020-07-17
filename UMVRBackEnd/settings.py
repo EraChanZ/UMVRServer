@@ -25,7 +25,7 @@ SECRET_KEY = 'modlq7_1f$mxlo7t@izx#s7w)d3c7i7opektocaxj=va_on0gf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from court.models import Court
 from .serializers import CourtSerializer, CourtSerializerUpdate
+import difflib
 
 class CourtViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
@@ -49,3 +50,13 @@ class CourtViewSet(viewsets.ModelViewSet):
         filtered = self.queryset.filter(landlord = request.user)
         serializer = self.get_serializer(filtered, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def suggestions(self, request):
+        if request.query_params.get("query"):
+            query = request.query_params.get("query")
+            allnames = list(map(lambda a: a["name"], self.queryset.values('name')))
+            matches = list(map(lambda a: {"text":a, "type":"court_name"}, difflib.get_close_matches(query, allnames, n = 10, cutoff = 0.0)))
+            return Response({'suggestions': matches})
+        else:
+            return Response({'error': 'No query param specified'})

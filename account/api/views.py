@@ -18,13 +18,11 @@ def registration_view(request):
         data = {}
         if serializer.is_valid():
             account = serializer.save()
-            data['response'] = "successfully did a thing"
-            data['email'] = account.email
-            data['username'] = account.username
-            token = Token.objects.get(user=account).key
-            data['token'] = token
+            data['success'] = True
+            data['data'] = {'email': account.email, 'first_name': account.first_name, 'last_name': account.last_name}
         else:
-            data = serializer.errors
+            data['success'] = False
+            data['errors'] = serializer.errors
         return Response(data)
 
 class UserViewSet(viewsets.ModelViewSet):
