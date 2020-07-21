@@ -11,6 +11,9 @@ from django.shortcuts import get_object_or_404
 from court.models import Court
 from .serializers import CourtSerializer, CourtSerializerUpdate
 import difflib
+import operator
+from geopy import distance
+from numpy import argpartition
 
 class CourtViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
@@ -50,6 +53,43 @@ class CourtViewSet(viewsets.ModelViewSet):
         filtered = self.queryset.filter(landlord = request.user)
         serializer = self.get_serializer(filtered, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def get_filtered_courts(self, request):
+        if request.query_params.get("query") and request.query_params.get("type") and request.query_params.get("offset"):
+            try:
+                offset = int(request.query_params.get("offset"))
+            except:
+                return Response({'error': 'offset not int'})
+
+            threshold = len(self.queryset) if ((offset+10) > len(self.queryset)) else (offset+10)
+
+            if offset >= len(self.queryset):
+                return Response({'error': 'offset too big'})
+
+            if request.query_params.get("type") == "court_name":
+                query = request.query_params.get("query")
+                allnames = list(map(lambda a: a["name"], self.queryset.values('name')))[int(request.query_params.get("offset")):]
+                matches = difflib.get_close_matches(query, allnames, n = 10, cutoff = 0.0)
+                filtered = self.queryset.filter(name__in=matches)
+                serializer = self.get_serializer(filtered, many=True)
+                return Response(serializer.data)
+            elif request.query_params.get("type") == "location" and request.query_params.get("lat") and request.query_params.get("lng"):
+                try:
+                    query_lat = float(request.query_params.get("lat"))
+                    query_lng = float(request.query_params.get("lng"))
+                except:
+                    return Response({'error': 'Coordinates are not floats'})
+                query_point = (query_lat, query_lng)
+                index_order = argpartition(list(map(lambda court: distance.distance( (court.latitude, court.longitude), query_point).meters , self.queryset)), range(offset, threshold)).tolist()[offset:threshold]
+                print(index_order)
+                ordered_courts_partion = operator.itemgetter(*index_order)(self.queryset)
+                serializer = self.get_serializer(ordered_courts_partion, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({'error': 'This type is in development'})
+        else:
+            return Response({'error': 'Some of the params not specified'})
 
     @action(detail=False, methods=['get'])
     def suggestions(self, request):
