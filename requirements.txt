@@ -239,7 +239,7 @@ tornado==5.1.1
 tqdm==4.11.2
 traitlets==4.3.2
 unicodecsv==0.14.1
-urllib3==1.24.1
+urllib3==1.26.5
 utils==0.9.0
 vk==2.0.2
 vk-api==11.8.0
